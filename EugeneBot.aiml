@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<aiml>
+
+    <category>
+        <pattern>start</pattern>
+        <template>
+            <think>
+                <set name ="theme">null</set>
+                <set name ="subject">null</set>
+                <set name ="userName">null</set>
+                <set name ="hasName">false</set>
+                <set name ="alpha">1</set>
+                <set name ="beta">1</set>
+                <set name ="gamma">1</set>
+                <set name ="delta">1</set>
+                <set name ="epsilon">1</set>
+                <set name ="zeta">1</set>
+                <set name ="eta">1</set>
+                <set name ="theta">1</set>
+                <set name ="iota">1</set>
+                <set name ="kappa">1</set>
+            </think>
+            Бот запущен
+        </template>   
+    </category>
+
+    <category>
+        <pattern>Привет</pattern>
+        <template>
+            <condition name="hasName" value="true">
+               Привет!
+            </condition>
+            <condition name="hasName" value="false">Привет! Как тебя зовут?</condition>
+        </template>   
+    </category>
+
+    <category>
+        <pattern>Как меня зовут</pattern>
+        <template>
+            <condition name="hasName" value="true">
+                Тебя зовут <get name="userName"/>
+            </condition>
+            <condition name="hasName" value="false">
+                Я не знаю, как тебя зовут :(
+            </condition>
+        </template>
+    </category>
+
+     
+     <category>
+        <pattern>*</pattern>
+        <that>Привет Как тебя зовут?</that>
+        <template>
+            <srai>Меня зовут <star/></srai>
+        </template>   
+    </category>
+
+    <category>
+        <pattern>Меня зовут *</pattern>
+        <template>
+            <think>
+                <set name ="userName"><star/></set>
+                <set name ="hasName">true</set>
+            </think>
+            <random>
+                <li> Приятно познакомиться, <star/>! </li>
+                <li> Рад знакомству, <star/>! </li>
+                <li> Очень приятно, <star/>! </li>
+            </random>
+        </template>
+    </category>
+
+    <category>
+        <pattern>Мое имя *</pattern>
+        <template>
+            <srai>Меня зовут <star/></srai>
+        </template>
+    </category>
+
+    <category>
+        <pattern>О чем мы говорим</pattern>
+        <template>
+            <condition name="theme" value="letter">
+                  Мы говорим о букве <get name="subject" />
+            </condition>
+            <condition name="theme" value="null">
+                  Мы говорим о птичках
+            </condition>
+        </template>
+    </category>
+
+    <category>
+        <pattern>Расскажи про нейросеть</pattern>
+        <template>
+            Нейросеть умеет распознавать греческие буквы альфа (alpha), бета (beta),
+            гамма (gamma), дельта (delta), эпсилон (epsilon), дзета (zeta), эта (eta),
+            тета (theta), йота (iota), каппа (kappa)
+        </template>   
+    </category>
+
+    <category>
+        <pattern>Расскажи еще</pattern>
+        <template>
+            <condition name="theme" value="letter">
+                <srai>Расскажи про букву <get name="subject" /></srai>
+            </condition>
+            <condition name="theme" value="null">
+                Что значит еще? 
+            </condition>
+        </template>
+    </category>
+
+    <category>
+        <pattern>Расскажи о букве *</pattern>
+        <template>
+            <srai>Расскажи про букву <star/></srai>
+        </template>
+    </category>
+
+    <category>
+        <pattern>Расскажи про букву альфа</pattern>
+        <template>
+
+            <condition name="alpha" value="4">
+                Увы, я больше ничего не знаю про букву альфа (
+                <think>
+                    <set name="alpha">0</set>
+                </think>
+            </condition>
+
+            <condition name="alpha" value="3">
+                <think>
+                    <set name="alpha">4</set>
+                </think>
+                А ещё есть инопланетянин Альф. Он не имеет никакого отоншения к букве альфа, 
+                но он милый и пушистый
+            </condition>
+
+            <condition name="alpha" value="2">
+                <think>
+                    <set name="alpha">3</set>
+                </think>
+                Есть такая звезда - Альфа-Центавра
+            </condition>
+
+            <condition name="alpha" value="1">
+                <think>
+                    <set name="alpha">2</set>
+                    <set name="subject">альфа</set>
+                    <set name="theme">letter</set>
+                </think>
+                Первая буква греческого алфавита
+            </condition>
+
+            <condition name="alpha" value="0">
+                <think>
+                    <set name="alpha">1</set>
+                </think>
+            </condition>
+        </template>   
+    </category>
+
+  <category>
+    <pattern>Расскажи про букву бета</pattern>
+    <template>
+
+      <condition name="beta" value="4">
+        Увы, я больше ничего не знаю про букву бета (
+        <think>
+          <set name="beta">0</set>
+        </think>
+      </condition>
+
+      <condition name="beta" value="3">
+        <think>
+          <set name="beta">4</set>
+        </think>
+        А ещё программисты называют свое ПО на стадии разработки бета-версией
+      </condition>
+
+      <condition name="beta" value="2">
+        <think>
+          <set name="beta">3</set>
+        </think>
+        В физике есть бета-частица, бета-излучение и бета-распад
+      </condition>
+
+      <condition name="beta" value="1">
+        <think>
+          <set name="beta">2</set>
+          <set name="subject">бета</set>
+          <set name="theme">letter</set>
+        </think>
+        Вторая буква греческого алфавита
+      </condition>
+
+      <condition name="beta" value="0">
+        <think>
+          <set name="beta">1</set>
+        </think>
+      </condition>
+    </template>
+  </category>
+
+  <category>
+    <pattern>Расскажи про букву гамма</pattern>
+    <template>
+
+      <condition name="gamma" value="4">
+        Увы, я больше ничего не знаю про букву гамма (
+        <think>
+          <set name="gamma">0</set>
+        </think>
+      </condition>
+
+      <condition name="gamma" value="3">
+        <think>
+          <set name="gamma">4</set>
+        </think>
+        А ещё Гамма — небольшой марсианский ударный кратер, расположенный на плато Меридиана.
+        Вряд ли это имеет какое-то отношение к букве гамма, но факт ведь интересный!
+      </condition>
+
+      <condition name="gamma" value="2">
+        <think>
+          <set name="gamma">3</set>
+        </think>
+        Вид электромагнитного излучения, характеризующийся чрезвычайно малой длиной волны, называют гамма-излучением
+      </condition>
+
+      <condition name="gamma" value="1">
+        <think>
+          <set name="gamma">2</set>
+          <set name="subject">гамма</set>
+          <set name="theme">letter</set>
+        </think>
+        Третья буква греческого алфавита
+      </condition>
+
+      <condition name="gamma" value="0">
+        <think>
+          <set name="gamma">1</set>
+        </think>
+      </condition>
+    </template>
+  </category>
+
+  <category>
+    <pattern>Расскажи про букву дельта</pattern>
+    <template>
+
+      <condition name="delta" value="4">
+        Увы, я больше ничего не знаю про букву дельта (
+        <think>
+          <set name="delta">0</set>
+        </think>
+      </condition>
+
+      <condition name="delta" value="3">
+        <think>
+          <set name="delta">4</set>
+        </think>
+        А ещё дельта-функция — обобщённая функция (непрерывный линейный функционал на пространстве дифференцируемых функций)
+      </condition>
+
+      <condition name="delta" value="2">
+        <think>
+          <set name="delta">3</set>
+        </think>
+        Буквой дельта обозначают конечную разность при изменении какого-то параметра
+      </condition>
+
+      <condition name="delta" value="1">
+        <think>
+          <set name="delta">2</set>
+          <set name="subject">дельта</set>
+          <set name="theme">letter</set>
+        </think>
+        Четвертая буква греческого алфавита
+      </condition>
+
+      <condition name="delta" value="0">
+        <think>
+          <set name="delta">1</set>
+        </think>
+      </condition>
+    </template>
+  </category>
+
+  <category>
+    <pattern>Расскажи про букву эпсилон</pattern>
+    <template>
+
+      <condition name="epsilon" value="4">
+        Увы, я больше ничего не знаю про букву эпсилон (
+        <think>
+          <set name="epsilon">0</set>
+        </think>
+      </condition>
+
+      <condition name="epsilon" value="3">
+        <think>
+          <set name="epsilon">4</set>
+        </think>
+        А в программировании эпсилон — точность численного типа данных
+        (наименьшее положительное значение eps, для которого будет соблюдаться неравенство 1 + eps > 1)
+      </condition>
+
+      <condition name="epsilon" value="2">
+        <think>
+          <set name="epsilon">3</set>
+        </think>
+        В математическом анализе буквой эпсилон обозначают положительное сколь угодно малое вещественное число
+      </condition>
+
+      <condition name="epsilon" value="1">
+        <think>
+          <set name="epsilon">2</set>
+          <set name="subject">эпсилон</set>
+          <set name="theme">letter</set>
+        </think>
+        Пятая буква греческого алфавита
+      </condition>
+
+      <condition name="epsilon" value="0">
+        <think>
+          <set name="epsilon">1</set>
+        </think>
+      </condition>
+    </template>
+  </category>
+
+  <category>
+    <pattern>Расскажи про букву дзета</pattern>
+    <template>
+
+      <condition name="zeta" value="4">
+        Увы, я
+        больше ничего не знаю про букву дзета (
+        <think>
+          <set name="zeta">0</set>
+        </think>
+      </condition>
+
+      <condition name="zeta" value="3">
+        <think>
+          <set name="zeta">4</set>
+        </think>
+        А еще в геодезии буква дзета используется для обозначения аномалии высоты (разница между нормальной и геодезической высотами)
+      </condition>
+
+      <condition name="zeta" value="2">
+        <think>
+          <set name="zeta">3</set>
+        </think>
+        Буква дзета в коллоидной химии используется для обозначения дзета-потенциала
+      </condition>
+
+      <condition name="zeta" value="1">
+        <think>
+          <set name="zeta">2</set>
+          <set name="subject">дзета</set>
+          <set name="theme">letter</set>
+        </think>
+        Шестая буква греческого алфавита
+      </condition>
+
+      <condition name="zeta" value="0">
+        <think>
+          <set name="zeta">1</set>
+        </think>
+      </condition>
+    </template>
+  </category>
+
+  <category>
+    <pattern>Расскажи про букву эта</pattern>
+    <template>
+
+      <condition name="eta" value="4">
+        Увы, я больше ничего не знаю про букву эта (
+        <think>
+          <set name="eta">0</set>
+        </think>
+      </condition>
+
+      <condition name="eta" value="3">
+        <think>
+          <set name="eta">4</set>
+        </think>
+        А еще буквой эта обозначается коэффициент полезного действия тепловой машины в термодинамике
+      </condition>
+
+      <condition name="eta" value="2">
+        <think>
+          <set name="eta">3</set>
+        </think>
+        От буквы эта произошли латинская буква H, кириллическая И c Й и армянский гхат
+      </condition>
+
+      <condition name="eta" value="1">
+        <think>
+          <set name="eta">2</set>
+          <set name="subject">эта</set>
+          <set name="theme">letter</set>
+        </think>
+        Седьмая буква греческого алфавита
+      </condition>
+
+      <condition name="eta" value="0">
+        <think>
+          <set name="eta">1</set>
+        </think>
+      </condition>
+    </template>
+  </category>
+
+  <category>
+    <pattern>Расскажи про букву тета</pattern>
+    <template>
+
+      <condition name="theta" value="4">
+        Увы, я больше ничего не знаю про букву тета (
+        <think>
+          <set name="theta">0</set>
+        </think>
+      </condition>
+
+      <condition name="theta" value="3">
+        <think>
+          <set name="theta">4</set>
+        </think>
+        А еще тета используется для обозначения температуры в физике, в частности, характеристической температуры Дебая
+      </condition>
+
+      <condition name="theta" value="2">
+        <think>
+          <set name="theta">3</set>
+        </think>
+        Во всемирной фонетической транскрипции (Международный фонетический алфавит) буква тета изображает глухой зубной щелевой согласный звук
+      </condition>
+
+      <condition name="theta" value="1">
+        <think>
+          <set name="theta">2</set>
+          <set name="subject">тета</set>
+          <set name="theme">letter</set>
+        </think>
+        Восьмая буква греческого алфавита
+      </condition>
+
+      <condition name="theta" value="0">
+        <think>
+          <set name="theta">1</set>
+        </think>
+      </condition>
+    </template>
+  </category>
+
+  <category>
+    <pattern>Расскажи про букву йота</pattern>
+    <template>
+
+      <condition name="iota" value="4">
+        Увы, я больше ничего не знаю про букву йота (
+        <think>
+          <set name="iota">0</set>
+        </think>
+      </condition>
+
+      <condition name="iota" value="3">
+        <think>
+          <set name="iota">4</set>
+        </think>
+        В системе греческой алфавитной записи чисел буква йота имеет числовое значение 10
+      </condition>
+
+      <condition name="iota" value="2">
+        <think>
+          <set name="iota">3</set>
+        </think>
+        Буква йота была введена лингвистами в греческое письмо в XIX веке, для передачи фонемы /j/,
+        которая является полусогласным звуком в реконструированном архаическом греческом языке
+      </condition>
+
+      <condition name="iota" value="1">
+        <think>
+          <set name="iota">2</set>
+          <set name="subject">йота</set>
+          <set name="theme">letter</set>
+        </think>
+        Девятая буква греческого алфавита
+      </condition>
+
+      <condition name="iota" value="0">
+        <think>
+          <set name="iota">1</set>
+        </think>
+      </condition>
+    </template>
+  </category>
+
+  <category>
+    <pattern>Расскажи про букву каппа</pattern>
+    <template>
+
+      <condition name="kappa" value="4">
+        Увы, я больше ничего не знаю про букву каппа (
+        <think>
+          <set name="kappa">0</set>
+        </think>
+      </condition>
+
+      <condition name="kappa" value="3">
+        <think>
+          <set
+          name="kappa">4</set>
+        </think>
+        В системе греческой алфавитной записи чисел имеет числовое значение 20
+      </condition>
+
+      <condition name="kappa" value="2">
+        <think>
+          <set name="kappa">3</set>
+        </think>
+        В дифференциальной геометрии буква каппа — кривизна кривой
+      </condition>
+
+      <condition name="kappa" value="1">
+        <think>
+          <set name="kappa">2</set>
+          <set name="subject">каппа</set>
+          <set name="theme">letter</set>
+        </think>
+        Десятая буква греческого алфавита
+      </condition>
+
+      <condition name="kappa" value="0">
+        <think>
+          <set name="kappa">1</set>
+        </think>
+      </condition>
+    </template>
+  </category>
+
+	<category>
+		<pattern>*</pattern>
+		<template>
+			Я тебя не понимаю
+		</template>
+	</category>
+
+    
+
+</aiml>
