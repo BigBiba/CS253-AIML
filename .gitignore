@@ -3,3 +3,5 @@ TGToken.txt
 obj/
 packages/
 bin/
+.idea/
+.DS_Store

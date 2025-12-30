@@ -38,6 +38,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,6 +48,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accord, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
@@ -108,28 +110,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AIMLService.cs" />
-    <Compile Include="Camera\Controller.cs" />
-    <Compile Include="Camera\Processor.cs" />
+    <Compile Include="GreekLetterProcessor.cs" />
+    <Compile Include="GreekLetterRecognizer.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Networks\AccordNet.cs" />
     <Compile Include="Networks\BaseNetwork.cs" />
-    <Compile Include="Networks\EvgenNetwork.cs" />
-    <Compile Include="Networks\NetworkProvider.cs" />
+    <Compile Include="Networks\StudentNetwork.cs" />
+    <Compile Include="Networks\Neural.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SampleGeneration\AlphabetGenerator.cs" />
-    <Compile Include="SampleGeneration\AlphabetSampleData.cs" />
-    <Compile Include="SampleGeneration\FigureSamleData.cs" />
-    <Compile Include="SampleGeneration\FiguresGenerator.cs" />
-    <Compile Include="SampleGeneration\IGenerator.cs" />
-    <Compile Include="SampleGeneration\ISampleData.cs" />
-    <Compile Include="SampleGeneration\Sample.cs" />
     <Compile Include="TelegramService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="EugeneBot.aiml" />
-    <None Include="network.net" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +138,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".gitignore" />
     <Content Include="config\DefaultPredicates.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

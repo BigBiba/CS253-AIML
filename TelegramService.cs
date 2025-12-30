@@ -1,6 +1,4 @@
-﻿using AForge.Imaging.Filters;
-using NeuralNetwork1;
-using NeuralNetwork1.SampleGeneration;
+﻿using NeuralNetwork1;
 using System;
 using System.Drawing;
 using System.IO;
@@ -19,29 +17,70 @@ namespace AIMLTGBot
     public class TelegramService : IDisposable
     {
         private readonly TelegramBotClient client;
-        private readonly AIMLService aiml;
-        // CancellationToken - инструмент для отмены задач, запущенных в отдельном потоке
+        private readonly AIMLService aiml;        
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
-        private BaseNetwork<AlphabetSampleData> network = new EvgenNetwork<AlphabetSampleData>("..//..//network.net");
+        
+        GreekLetterRecognizer recognizer;        
+        private const string ModelPath = "greek_model.bin";
+
         public string Username { get; }
 
         public TelegramService(string token, AIMLService aimlService)
         {
             aiml = aimlService;
-            //var res = client.GetMeAsync().Result;
-            //Username = res.Username;
-            //aiml.Talk(res.Id, Username, "init");
             client = new TelegramBotClient(token);
+
+            recognizer = new GreekLetterRecognizer();
+            
+            if (TryLoadModel())
+            {
+                Console.WriteLine("Модель загружена успешно");
+                double accuracy = recognizer.TestAccuracy(200);
+                Console.WriteLine($"Точность модели: {accuracy:P2}");
+            }
+            else
+            {
+                Console.WriteLine("Модель не найдена, требуется обучение...");                
+                TrainModel();
+            }
+
             client.StartReceiving(HandleUpdateMessageAsync, HandleErrorAsync, new ReceiverOptions
-            {   // Подписываемся только на сообщения
+            {
                 AllowedUpdates = new[] { UpdateType.Message }
             },
-            cancellationToken: cts.Token);
-            // Пробуем получить логин бота - тестируем соединение и токен
+            cancellationToken: cts.Token);            
             var res = client.GetMeAsync().Result;
             Username = res.Username;
         }
 
+        private bool TryLoadModel()
+        {
+            try
+            {
+                if (System.IO.File.Exists(ModelPath))
+                {
+                    recognizer.LoadModel(ModelPath);                    
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка загрузки модели: {ex.Message}");
+            }
+            return false;
+        }
+
+        private void TrainModel()
+        {
+            Console.WriteLine("Начинаем обучение модели...");
+            recognizer.Train(120);
+            Console.WriteLine("Модель обучена");
+            double accuracy = recognizer.TestAccuracy(200);
+            Console.WriteLine($"Точность после обучения: {accuracy:P2}");
+            
+            recognizer.SaveModel(ModelPath);            
+            Console.WriteLine("Модель сохранена");
+        }        
         async Task HandleUpdateMessageAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             var message = update.Message;
@@ -49,61 +88,50 @@ namespace AIMLTGBot
             var username = message.Chat.FirstName;
             if (message.Type == MessageType.Text)
             {
-                var messageText = update.Message.Text;
-                //messageText = Regex.Replace(messageText, "ё", "е");
+                var messageText = update.Message.Text;                
                 Console.WriteLine($"Received a '{messageText}' message in chat {chatId} with {username}.");
-                var aimlResponse = aiml.Talk(chatId, username, messageText);
-                aimlResponse= Regex.Replace(aimlResponse, "\\s+", " ");
-                Regex regex = new Regex("^\\s*$");
-                if(!regex.IsMatch(aimlResponse))
-                // Echo received message text
-                    await botClient.SendTextMessageAsync(
-                        chatId: chatId,
-                        text: aimlResponse,
-                        cancellationToken: cancellationToken);
-                    return;
-            }
-            // Загрузка изображений пригодится для соединения с нейросетью
+                var aimlResponse = aiml.Talk(chatId, username, messageText) ?? string.Empty;
+                aimlResponse = Regex.Replace(aimlResponse, "\\s+", " ").Trim();
+
+                if (aimlResponse.Length == 0)
+                    aimlResponse = "Я тебя не понимаю";
+
+                await botClient.SendTextMessageAsync(
+                    chatId: chatId,
+                    text: aimlResponse,
+                    cancellationToken: cancellationToken);
+                return;
+            }            
             if (message.Type == MessageType.Photo)
             {
                 var photoId = message.Photo.Last().FileId;
-                Telegram.Bot.Types.File fl = await client.GetFileAsync(photoId, cancellationToken: cancellationToken);
+                Telegram.Bot.Types.File fl = client.GetFileAsync(photoId).Result;
                 var imageStream = new MemoryStream();
                 await client.DownloadFileAsync(fl.FilePath, imageStream, cancellationToken: cancellationToken);
-                var bitmap = new Bitmap(Image.FromStream(imageStream));
+                var img = System.Drawing.Image.FromStream(imageStream);
 
-                //bitmap = scaleFilter.Apply(bitmap);
-                var sample = new Sample<AlphabetSampleData>(bitmap.ToInput(),10, new AlphabetSampleData());
+                Bitmap originalBm = new Bitmap(img);
+                
+                double[] input = Helpers.ToInput(originalBm);
 
-
-                // Если бы мы хотели получить битмап, то могли бы использовать new Bitmap(Image.FromStream(imageStream))
-                // Но вместо этого пошлём картинку назад
-                // Стрим помнит последнее место записи, мы же хотим теперь прочитать с самого начала
-                //imageStream.Seek(0, 0);
-                using (MemoryStream ms = new MemoryStream())
+                using (Bitmap processed = originalBm.ToInputBitmap())
                 {
-                    bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                    ms.Position = 0;
-                    await client.SendPhotoAsync(
-                       message.Chat.Id,
-                       ms,
-                       $"Распознана буква: {network.Predict(sample)}",
-                       cancellationToken: cancellationToken
-                    );
-                }  
-                return;
-            }
-            // Можно обрабатывать разные виды сообщений, просто для примера пробросим реакцию на них в AIML
-            if (message.Type == MessageType.Video)
-            {
-                await client.SendTextMessageAsync(message.Chat.Id, aiml.Talk(chatId, username, "Видео"), cancellationToken: cancellationToken);
-                return;
-            }
-            if (message.Type == MessageType.Audio)
-            {
-                await client.SendTextMessageAsync(message.Chat.Id, aiml.Talk(chatId, username, "Аудио"), cancellationToken: cancellationToken);
-                return;
-            }
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        processed.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                        ms.Position = 0;
+
+                        AlphabetLetter recognized = recognizer.Recognize(originalBm);
+
+                        await client.SendPhotoAsync(
+                            message.Chat.Id,
+                            ms,
+                            $"Распознана буква: {recognized}\n(Выделенный и обработанный блоб)",
+                            cancellationToken: cancellationToken
+                        );
+                    }
+                }                                
+            }        
         }
 
         Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -117,9 +145,7 @@ namespace AIMLTGBot
         }
 
         public void Dispose()
-        {
-            // Заканчиваем работу - корректно отменяем задачи в других потоках
-            // Отменяем токен - завершатся все асинхронные таски
+        {                        
             cts.Cancel();
         }
     }

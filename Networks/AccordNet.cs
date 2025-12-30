@@ -6,7 +6,7 @@ using Accord.Neuro.Learning;
 
 namespace NeuralNetwork1
 {
-    class AccordNet<T> : BaseNetwork<T> where T: ISampleData, new()
+    class AccordNet : BaseNetwork
     {
         /// <summary>
         /// Реализация нейронной сети из Accord.NET
@@ -35,7 +35,7 @@ namespace NeuralNetwork1
         /// </summary>
         /// <param name="sample"></param>
         /// <returns>Количество итераций для достижения заданного уровня ошибки</returns>
-        public override int Train(Sample<T> sample, double acceptableError, bool parallel)
+        public override int Train(Sample sample, double acceptableError, bool parallel)
         {
             var teacher = MakeTeacher(parallel);
 
@@ -48,6 +48,16 @@ namespace NeuralNetwork1
             return iters;
         }
 
+        public override void Load(string filePath)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Save(string filePath)
+        {
+            throw new System.NotImplementedException();
+        }
+
         //  Создаём "обучателя" - либо параллельного, либо последовательного  
         private ISupervisedLearning MakeTeacher(bool parallel)
         {
@@ -56,7 +66,7 @@ namespace NeuralNetwork1
             return new ResilientBackpropagationLearning(network);
         }
 
-        public override double TrainOnDataSet(SamplesSet<T> samplesSet, int epochsCount, double acceptableError,
+        public override double TrainOnDataSet(SamplesSet samplesSet, int epochsCount, double acceptableError,
             bool parallel)
         {
             //  Сначала надо сконструировать массивы входов и выходов

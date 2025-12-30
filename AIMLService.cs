@@ -12,8 +12,8 @@ namespace AIMLTGBot
         {
             bot = new Bot();
             bot.loadSettings();
-            bot.loadAIMLFromFiles();
             bot.isAcceptingUserInput = false;
+            bot.loadAIMLFromFiles();                                    
             bot.isAcceptingUserInput = true;
         }
 
@@ -25,18 +25,16 @@ namespace AIMLTGBot
             {
                 user = new User(userId.ToString(), bot);
                 users.Add(userId, user);
-                Request r = new Request($"start", user, bot);
-                bot.Chat(r);
-                //r = new Request($"Меня зовут {userName}", user, bot); 
-                //result += bot.Chat(r).Output + System.Environment.NewLine;
+                Request r = new Request($"Меня зовут {userName}", user, bot);
+                result += bot.Chat(r).Output + System.Environment.NewLine;
             }
             else
             {
                 user = users[userId];
             }
 
-            var chat = bot.Chat(new Request(phrase, user, bot));
-            result += chat.Output;
+            string normalizedPhrase = phrase.ToUpperInvariant().Trim();
+            result += bot.Chat(new Request(normalizedPhrase, user, bot)).Output;
             return result;
         }
     }
